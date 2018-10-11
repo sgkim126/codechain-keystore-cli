@@ -13,6 +13,7 @@ import { exportKey } from "./command/export";
 import { importKey } from "./command/import";
 import { importRawKey } from "./command/importRaw";
 import { listKeys } from "./command/list";
+import { migrateKeys } from "./command/migrate";
 import { CLIError, CLIErrorType } from "./error";
 import {
     AccountType,
@@ -82,6 +83,11 @@ program
     .option("-p, --passphrase <passphrase>", "passphrase")
     .option("--pretty", "pretty-print the output")
     .action(handleError(exportCommand));
+
+program
+    .command("migrate")
+    .description("migrate 0.6 format to 0.7")
+    .action(handleError(migrateCommand));
 
 // error on unknown commands
 program.on("command:*", () => {
@@ -205,6 +211,11 @@ async function exportCommand(args: any[], option: ExportOption) {
         ? JSON.stringify(secret, null, 2)
         : JSON.stringify(secret);
     console.log(res);
+}
+
+async function migrateCommand(args: any[], option: {}) {
+    process.stdin.on('data')
+    console.log(migrateKeys({}));
 }
 
 program.on("--help", () => {
